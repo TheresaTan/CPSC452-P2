@@ -1,5 +1,5 @@
 #include "DES.h"
-
+#include <iostream>
 /**
  * Sets the key to use
  * @param key - the key to use
@@ -49,13 +49,13 @@ bool DES::setKey(const unsigned char* keyArray)
 	
 	
 	/* Set the encryption key */
-	if ((keyErrorCode = des_set_key_checked(&des_key, this->key)) != 0)
+	if ((keyErrorCode = DES_set_key_checked(&des_key, &this->key)) != 0)
 	{
 		fprintf(stderr, "\nkey error %d\n", keyErrorCode);
 		
 		return false;
 	}
-	
+	cout << "ENCRYPTION KEY: " << &this->key << endl;
 	/* All is well */	
 	return true;
 }
@@ -69,8 +69,13 @@ unsigned char* DES::encrypt(const unsigned char* plaintext)
 {
 	//LOGIC:
 	//1. Declare an array DES_LONG block[2];
+	DES_LONG block[2];
+
+	cout << "NOW IN THE ENCRYPTION FUNCTION \n";
 	//2. Use ctol() to convert the first 4 chars into long; store the result in block[0]
+	//block[0] = ctol(&first);
 	//3. Use ctol() to convert the second 4 chars into long; store the result in block[1]
+	//block[1] = ctol(&second);
 	//4. Perform des_encrypt1 in order to encrypt the block using this->key (see sample codes for details)
 	//5. Convert the first ciphertext long to 4 characters using ltoc()
 	//6. Convert the second ciphertext long to 4 characters using ltoc()
@@ -78,7 +83,7 @@ unsigned char* DES::encrypt(const unsigned char* plaintext)
 	// (e.g. unsigned char* bytes = new unsigned char[8]).
 	//8. Return the pointer to the dynamically allocated array.
 	
-	return NULL;
+	return (unsigned char*)"tempreturnvalue";
 }
 
 /**
@@ -90,6 +95,7 @@ unsigned char* DES::decrypt(const unsigned char* ciphertext)
 {
 	//LOGIC:
 	// Same logic as encrypt(), except in step 4. decrypt instead of encrypting
+    return (unsigned char*)"tempreturnvalue";
 }
 
 /**

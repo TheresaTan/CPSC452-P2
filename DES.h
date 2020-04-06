@@ -86,7 +86,7 @@ class DES: public CipherInterface
 		unsigned char des_key[8];
 		
 		/* The key structure used by the DES library */
-		des_key_schedule key;
+		DES_key_schedule key;
 };
 
 

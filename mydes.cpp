@@ -54,12 +54,12 @@ int main()
 	static unsigned char cbc_key[8] = {0x01,0x23,0x45,0x67,0x89,0xab,0xcd,0xef};
 
 	/* The key structure used by the DES library */
-	des_key_schedule key;
+	DES_key_schedule key;
 	
 	/* Use the user-defined key to generate the keys for each
 	 * stage of the DES
 	 */
-	if ((k = des_set_key_checked(&cbc_key,key)) != 0)
+	if ((k = DES_set_key_checked(&cbc_key,&key)) != 0)
 		printf("\nkey error\n");
 	
 	/* The plain text - must be 64 bits (i.e. 
@@ -89,7 +89,7 @@ int main()
 	 * and in[1] will be replaced with the corresponding
 	 * ciphertext
 	 */
-	des_encrypt1(in, key, ENC);
+	DES_encrypt1(in, &key, ENC);
 	
 	memset(cipherText, 0, 9);
 		
@@ -117,7 +117,7 @@ int main()
 	
 		
 	/* Decrypt the cipher text */
-	des_encrypt1(in,key,DEC);
+	DES_encrypt1(in,&key,DEC);
 
 	memset(decryptedText, 0, 9);
 	
