@@ -65,8 +65,14 @@ int main(int argc, char** argv)
     if(inputFile.is_open()){
         while(!inputFile.eof()){
             string line = "";
-            //getting the 8 character string
-            for(int i = 0; i< 8; i++){
+            int end = 0;
+            //getting the 8 or 16 character string
+            if(cipherName == "DES"){
+                end = 8;
+            }else if(cipherName == "AES"){
+                end = 16;
+            }
+            for(int i = 0; i< end; i++){
                 //inputFile.get(c);
                 if(inputFile.get(c)){
                     line += c;
