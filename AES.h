@@ -50,6 +50,7 @@ class AES: public CipherInterface
 	protected:
 
 		//TODO: declare the AES key
+		aes_key_st AES_KEY;
 };
 
 

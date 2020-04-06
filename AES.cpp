@@ -26,7 +26,26 @@ bool AES::setKey(const unsigned char* keyArray)
 	// For documentation, please see https://boringssl.googlesource.com/boringssl/+/2623/include/openssl/aes.h
 	// and aes.cpp example provided with the assignment.
 	
-	
+	// if the first byte is 0, we will set an encryption key
+	if(keyArray[0] == AES_ENCRYPT) {
+		if(AES_set_encrypt_key(keyArray, sizeof(keyArray), &AES_KEY) == 0) {
+			// return 0 on success
+			return 0;
+		} else {
+			// return false on failure
+			return false;
+		}
+	} else {
+		// if first byte is any other value than 0, we will set a decryption key
+		if(AES_set_encrypt_key(keyArray, sizeof(keyArray), &AES_KEY) == 0) {
+			// return 0 on success
+			return 0;
+		} else {
+			// return false on failure
+			return false;
+		}
+	}
+
 	return false;
 	
 }
@@ -43,8 +62,13 @@ unsigned char* AES::encrypt(const unsigned char* plainText)
 	//	2. Use AES_ecb_encrypt(...) to encrypt the text (please see the URL in setKey(...)
 	//	and the aes.cpp example provided.
 	// 	3. Return the pointer to the ciphertext
-		
-	return NULL;	
+
+	unsigned char* tempCipher[AES_BLOCK_SIZE];
+
+	AES_ecb_encrypt(plainText, *tempCipher, &AES_KEY, AES_ENCRYPT);
+
+	return *tempCipher;
+	
 }
 
 /**
@@ -59,8 +83,12 @@ unsigned char* AES::decrypt(const unsigned char* cipherText)
 	//	2. Use AES_ecb_encrypt(...) to decrypt the text (please see the URL in setKey(...)
 	//	and the aes.cpp example provided.
 	// 	3. Return the pointer to the plaintext
+
+	unsigned char* tempPlain[AES_BLOCK_SIZE];
+
+	AES_ecb_encrypt(cipherText, *tempPlain, &AES_KEY, AES_DECRYPT);
 		
-	return NULL;
+	return *tempPlain;
 }
 
 
