@@ -69,9 +69,11 @@ unsigned char* DES::encrypt(const unsigned char* plaintext)
 {
 	//LOGIC:
 	//1. Declare an array DES_LONG block[2];
+
 	DES_LONG block[2];
 
 	cout << "NOW IN THE ENCRYPTION FUNCTION \n";
+	cout << "CURRENT PLAINTEXT: " << plaintext << endl;
 	//2. Use ctol() to convert the first 4 chars into long; store the result in block[0]
 	//block[0] = ctol(&first);
 	//3. Use ctol() to convert the second 4 chars into long; store the result in block[1]

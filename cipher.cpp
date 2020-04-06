@@ -20,7 +20,6 @@ int main(int argc, char** argv)
     /* Create an instance of the DES cipher */
     CipherInterface* cipher = NULL;
     const unsigned char *key = NULL;
-    string line = "";
     const unsigned char *cipherText = NULL;
     const unsigned char *plainText = NULL;
     ifstream inputFile;
@@ -62,23 +61,36 @@ int main(int argc, char** argv)
 
     inputFile.open(input);
     outputFile.open(output);
+    char c;
     if(inputFile.is_open()){
-        while(getline(inputFile,line)){
+        while(!inputFile.eof()){
+            string line = "";
+            //getting the 8 character string
+            for(int i = 0; i< 8; i++){
+                //inputFile.get(c);
+                if(inputFile.get(c)){
+                    line += c;
+                }else{
+                    line += '0';
+                }
+            }
+            cout << "LINE CHUNK: " << line << endl;
             if(encOrDec == "ENC"){
 
-                //cipherText = cipher->encrypt((const unsigned char*)line.c_str());
+                cipherText = cipher->encrypt((const unsigned char*)line.c_str());
                 cout << "STARTING ENCRYPTION \n";
                 //encrypts up to 8 character string
 
-                cipherText = cipher->encrypt((const unsigned char*)"helloworld");
+                //cipherText = cipher->encrypt((const unsigned char*)"helloworld");
                 outputFile << cipherText;
             }else if(encOrDec == "DEC"){
-                //plainText = cipher->decrypt((const unsigned char*)line.c_str());
+                plainText = cipher->decrypt((const unsigned char*)line.c_str());
                 cout << "STARTING DECRYPTION \n";
-                plainText = (const unsigned char*)"dodecryptlater";
+                //plainText = (const unsigned char*)"dodecryptlater";
                 outputFile << plainText;
             }
         }
+
         inputFile.close();
         outputFile.close();
     }else cout << "Unable to open file";
