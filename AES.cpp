@@ -58,10 +58,10 @@ unsigned char* AES::encrypt(const unsigned char* plainText)
 	// 	3. Return the pointer to the ciphertext
 
 	unsigned char* tempCipher;
-	tempCipher = new unsigned char[AES_BLOCK_SIZE+1];
+	tempCipher = new unsigned char[AES_BLOCK_SIZE];
 	
 	// Clear the ciphertext block
-	memset(tempCipher, 0, AES_BLOCK_SIZE+1);
+	memset(tempCipher, 0, AES_BLOCK_SIZE);
 
 	AES_ecb_encrypt(plainText, tempCipher, &AES_KEY, AES_ENCRYPT);
 	
@@ -84,10 +84,10 @@ unsigned char* AES::decrypt(const unsigned char* cipherText)
 	// 	3. Return the pointer to the plaintext
 
 	unsigned char* tempPlain;
-	tempPlain = new unsigned char[AES_BLOCK_SIZE+1];
+	tempPlain = new unsigned char[AES_BLOCK_SIZE];
 
 	// clear the plaintext block
-	memset(tempPlain, 0, AES_BLOCK_SIZE+1);
+	memset(tempPlain, 0, AES_BLOCK_SIZE);
 
 	AES_ecb_encrypt(cipherText, tempPlain, &AES_KEY, AES_DECRYPT);
 		
