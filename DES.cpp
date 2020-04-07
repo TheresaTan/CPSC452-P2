@@ -75,14 +75,13 @@ unsigned char* DES::encrypt(const unsigned char* plaintext)
 
 	DES_LONG block[2] = {};
     unsigned char* tempText = new unsigned char;
-
     /* The cipher text */
     unsigned char* cipherText = new unsigned char[9];
 
     //2. Use ctol() to convert the first 4 chars into long; store the result in block[0]
     block[0] = ctol(const_cast<unsigned char*>(plaintext));
     //3. Use ctol() to convert the second 4 chars into long; store the result in block[1]
-    block[1] = ctol(const_cast<unsigned char*>(plaintext) + 4);
+    block[1] = ctol(const_cast<unsigned char*>(plaintext)+4 );
 
     //cout << "BLOCK[0]: " << block[0] << endl;
     //cout << "BLOCK[1]: " << block[1] << endl;
@@ -93,17 +92,17 @@ unsigned char* DES::encrypt(const unsigned char* plaintext)
 	//5. Convert the first ciphertext long to 4 characters using ltoc()
     memset(cipherText, 0, 9);
     ltoc(block[0], cipherText);
-
+    cout << "CIPHERTEXT FIRST BLOCK: " << cipherText << endl;
     //6. Convert the second ciphertext long to 4 characters using ltoc()
     ltoc(block[1], cipherText + 4);
-
+    cout << "CIPHERTEXT SECOND BLOCK: " << cipherText+4 << endl;
     /* Print the cipher text */
     fprintf(stderr, "Cipher text: %s\n", cipherText);
 
 	//7. Save the results in the dynamically allocated char array
 	//8. Return the pointer to the dynamically allocated array.
 	
-	return (unsigned char*)cipherText;
+	return cipherText;
 }
 
 /**
@@ -145,7 +144,7 @@ unsigned char* DES::decrypt(const unsigned char* ciphertext)
     //7. Save the results in the dynamically allocated char array
     //8. Return the pointer to the dynamically allocated array.
 
-    return (unsigned char*)decryptText;
+    return decryptText;
 }
 
 /**

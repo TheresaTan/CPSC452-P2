@@ -76,21 +76,23 @@ int main(int argc, char** argv)
                 //inputFile.get(c);
                 if(inputFile.get(c)){
                     line += c;
-                }else{
+                }else if(line !=""){
                     line += '0';
+                }else{
+                    break;
                 }
             }
-            //cout << "LINE CHUNK: " << line << endl;
-            if(encOrDec == "ENC"){
-                cout << "STARTING ENCRYPTION \n";
+            cout << "LINE CHUNK: " << line << endl;
+            if(encOrDec == "ENC" && line != ""){
+                //cout << "STARTING ENCRYPTION \n";
                 cipherText = cipher->encrypt((const unsigned char*)line.c_str());
 
                 //encrypts up to 8 character string
 
                 //cipherText = cipher->encrypt((const unsigned char*)"helloworld");
                 outputFile << cipherText;
-            }else if(encOrDec == "DEC"){
-                cout << "STARTING DECRYPTION \n";
+            }else if(encOrDec == "DEC" && line != ""){
+                //cout << "STARTING DECRYPTION \n";
                 plainText = cipher->decrypt((const unsigned char*)line.c_str());
 
                 //plainText = (const unsigned char*)"dodecryptlater";
