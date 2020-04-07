@@ -80,18 +80,19 @@ int main(int argc, char** argv)
                     line += '0';
                 }
             }
-            cout << "LINE CHUNK: " << line << endl;
+            //cout << "LINE CHUNK: " << line << endl;
             if(encOrDec == "ENC"){
-
-                cipherText = cipher->encrypt((const unsigned char*)line.c_str());
                 cout << "STARTING ENCRYPTION \n";
+                cipherText = cipher->encrypt((const unsigned char*)line.c_str());
+
                 //encrypts up to 8 character string
 
                 //cipherText = cipher->encrypt((const unsigned char*)"helloworld");
                 outputFile << cipherText;
             }else if(encOrDec == "DEC"){
-                plainText = cipher->decrypt((const unsigned char*)line.c_str());
                 cout << "STARTING DECRYPTION \n";
+                plainText = cipher->decrypt((const unsigned char*)line.c_str());
+
                 //plainText = (const unsigned char*)"dodecryptlater";
                 outputFile << plainText;
             }
