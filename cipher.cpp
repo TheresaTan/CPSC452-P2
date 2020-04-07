@@ -82,11 +82,9 @@ int main(int argc, char** argv)
             }
             cout << "LINE CHUNK: " << line << endl;
             if(encOrDec == "ENC"){
-
                 cipherText = cipher->encrypt((const unsigned char*)line.c_str());
                 cout << "STARTING ENCRYPTION \n";
                 //encrypts up to 8 character string
-
                 //cipherText = cipher->encrypt((const unsigned char*)"helloworld");
                 outputFile << cipherText;
             }else if(encOrDec == "DEC"){
@@ -94,11 +92,13 @@ int main(int argc, char** argv)
                 cout << "STARTING DECRYPTION \n";
                 //plainText = (const unsigned char*)"dodecryptlater";
                 outputFile << plainText;
+                cout << plainText << endl;
             }
         }
 
         inputFile.close();
         outputFile.close();
+
     }else cout << "Unable to open file";
 
 

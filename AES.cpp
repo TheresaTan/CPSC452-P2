@@ -1,4 +1,5 @@
 #include "AES.h"
+#include <iostream>
 
 /**
  * Sets the key to use
@@ -25,29 +26,22 @@ bool AES::setKey(const unsigned char* keyArray)
 	// Both functions return 0 on success and other values on faliure.
 	// For documentation, please see https://boringssl.googlesource.com/boringssl/+/2623/include/openssl/aes.h
 	// and aes.cpp example provided with the assignment.
-	
+
 	// if the first byte is 0, we will set an encryption key
-	if(keyArray[0] == AES_ENCRYPT) {
-		if(AES_set_encrypt_key(keyArray, sizeof(keyArray), &AES_KEY) == 0) {
-			// return 0 on success
-			return 0;
-		} else {
-			// return false on failure
-			return false;
+	if(keyArray[0] == '0' && keyArray[1] == '0') {
+		if(AES_set_encrypt_key(keyArray+2, 128, &AES_KEY) != 0){
+			fprintf(stderr, "Could not successfully encrypt the AES key.\n");
+			exit(-1);
 		}
+		return 0;
 	} else {
 		// if first byte is any other value than 0, we will set a decryption key
-		if(AES_set_encrypt_key(keyArray, sizeof(keyArray), &AES_KEY) == 0) {
-			// return 0 on success
-			return 0;
-		} else {
-			// return false on failure
-			return false;
+		if(AES_set_decrypt_key(keyArray+2, 128, &AES_KEY)!=0) {
+			fprintf(stderr, "Could not succesfully set the decryption key.\n");
+			exit(-1);
 		}
+		return 0;
 	}
-
-	return false;
-	
 }
 
 /**	
@@ -63,11 +57,16 @@ unsigned char* AES::encrypt(const unsigned char* plainText)
 	//	and the aes.cpp example provided.
 	// 	3. Return the pointer to the ciphertext
 
-	unsigned char* tempCipher[AES_BLOCK_SIZE];
+	unsigned char* tempCipher;
+	tempCipher = new unsigned char[AES_BLOCK_SIZE+1];
+	
+	// Clear the ciphertext block
+	memset(tempCipher, 0, AES_BLOCK_SIZE+1);
 
-	AES_ecb_encrypt(plainText, *tempCipher, &AES_KEY, AES_ENCRYPT);
-
-	return *tempCipher;
+	AES_ecb_encrypt(plainText, tempCipher, &AES_KEY, AES_ENCRYPT);
+	
+	//printf("%c\n", tempCipher[0]);
+	return tempCipher;
 	
 }
 
@@ -84,11 +83,15 @@ unsigned char* AES::decrypt(const unsigned char* cipherText)
 	//	and the aes.cpp example provided.
 	// 	3. Return the pointer to the plaintext
 
-	unsigned char* tempPlain[AES_BLOCK_SIZE];
+	unsigned char* tempPlain;
+	tempPlain = new unsigned char[AES_BLOCK_SIZE+1];
 
-	AES_ecb_encrypt(cipherText, *tempPlain, &AES_KEY, AES_DECRYPT);
+	// clear the plaintext block
+	memset(tempPlain, 0, AES_BLOCK_SIZE+1);
+
+	AES_ecb_encrypt(cipherText, tempPlain, &AES_KEY, AES_DECRYPT);
 		
-	return *tempPlain;
+	return tempPlain;
 }
 
 
