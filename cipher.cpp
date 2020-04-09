@@ -4,6 +4,15 @@
 #include "AES.h"
 #include <iostream>
 #include <fstream>
+#include <sys/stat.h>
+
+size_t getFilesize(const char* filename) {
+    struct stat st;
+    if(stat(filename, &st) != 0) {
+        return 0;
+    }
+    return st.st_size;
+}
 
 using namespace std;
 
@@ -22,15 +31,15 @@ int main(int argc, char** argv)
     const unsigned char *key = NULL;
     const unsigned char *cipherText = NULL;
     const unsigned char *plainText = NULL;
-    ifstream inputFile;
-    ofstream outputFile;
-
+    //ifstream inputFile;
+   // ofstream outputFile;
+    FILE * inputFile;
+    FILE * outputFile;
     string cipherName = argv[1];
     key = (const unsigned char *)argv[2];
     string encOrDec = argv[3];
-    string input = argv[4];
-    string output = argv[5];
-
+    char * input = argv[4];
+    char * output = argv[5];
 
 
     /* Set the encryption key
@@ -59,45 +68,49 @@ int main(int argc, char** argv)
         exit(-1);
     }
 
-    inputFile.open(input);
-    outputFile.open(output);
-    char c;
-    if(inputFile.is_open()){
-        while(!inputFile.eof()){
-            string line = "";
-            int end = 0;
+    inputFile = fopen(input, "rb");
+    outputFile = fopen(output, "wb");
+    long end;
+    size_t result;
+    unsigned char * buffer;
+    //int bytesRead = 0;
+    if(inputFile!=NULL) {
+        //while(!inputFile.eof()){
+        while(!feof(inputFile)) {
+
             //getting the 8 or 16 character string
             if(cipherName == "DES"){
                 end = 8;
             }else if(cipherName == "AES"){
                 end = 16;
             }
-            for(int i = 0; i< end; i++){
-                //inputFile.get(c);
-                if(inputFile.get(c)){
-                    line += c;
-                }else{
-                    line += '0';
+            buffer = new unsigned char[end];
+
+            result = fread(buffer, 1, end, inputFile);
+            cout << result << endl;
+            if(result != end && result != 0 && encOrDec != "DEC"){
+                for(long int i = result; i < end; i++){
+                    buffer[i] = '0';
                 }
             }
-            cout << "LINE CHUNK: " << line << endl;
+            cout << "LINE CHUNK: " << buffer << endl;
             if(encOrDec == "ENC"){
-                cipherText = cipher->encrypt((const unsigned char*)line.c_str());
+                cipherText = cipher->encrypt((const unsigned char*)buffer);
                 cout << "STARTING ENCRYPTION \n";
                 //encrypts up to 8 character string
                 //cipherText = cipher->encrypt((const unsigned char*)"helloworld");
-                outputFile << cipherText;
+                fwrite(cipherText, sizeof(char), end, outputFile);
             }else if(encOrDec == "DEC"){
-                plainText = cipher->decrypt((const unsigned char*)line.c_str());
+                plainText = cipher->decrypt((const unsigned char*)buffer);
                 cout << "STARTING DECRYPTION \n";
                 //plainText = (const unsigned char*)"dodecryptlater";
-                outputFile << plainText;
-                cout << plainText << endl;
+                fwrite(plainText, sizeof(char), end, outputFile);
+
             }
         }
-
-        inputFile.close();
-        outputFile.close();
+        fclose(inputFile);
+        fclose(outputFile);
+        free(buffer);
 
     }else cout << "Unable to open file";
 
