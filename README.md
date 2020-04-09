@@ -9,13 +9,13 @@ Christopher Phongsa - cphongsa@csu.fullerton.edu
     ./cipher AES <KEY> <ENC/DEC> <INPUT FILE> <OUTPUT FILE>
 
 ------------------------PLEASE NOTE------------------------
-- <KEY> must be 17 bytes (32-bits) long
-- For encryption, the first byte must be 00
-- For decryption, the first byte must be 11
+- <KEY> must be 16 bytes (32-bits) long
 -----------------------------------------------------------
 - For example (these commands can be run sequentially):
     - AES encryption
-        ./cipher AES "0000112233445566778899aabbccddeeff" ENC in.txt out.txt
+        ./cipher AES "00112233445566778899aabbccddeeff" ENC in.txt enc.txt
     - AES decryption
-        ./cipher AES "1100112233445566778899aabbccddeeff" ENC out.txt in.txt
-
+        ./cipher AES "00112233445566778899aabbccddeeff" DEC enc.txt dec.txt
+OR
+    ./cipher AES "0123456789abcdef" ENC in.txt enc.txt
+    ./cipher AES "0123456789abcdef" DEC enc.txt dec.txt

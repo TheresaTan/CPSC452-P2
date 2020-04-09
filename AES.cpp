@@ -28,18 +28,20 @@ bool AES::setKey(const unsigned char* keyArray)
 	// and aes.cpp example provided with the assignment.
 
 	// if the first byte is 0, we will set an encryption key
-	if(keyArray[0] == '0' && keyArray[1] == '0') {
-		if(AES_set_encrypt_key(keyArray+2, 128, &AES_KEY) != 0){
+	if(keyArray[0] == '0') {
+		if(AES_set_encrypt_key(keyArray+1, 128, &AES_KEY) != 0){
 			fprintf(stderr, "Could not successfully encrypt the AES key.\n");
 			exit(-1);
 		}
+		fprintf(stderr, "Set the key for encryption\n");
 		return 0;
 	} else {
 		// if first byte is any other value than 0, we will set a decryption key
-		if(AES_set_decrypt_key(keyArray+2, 128, &AES_KEY)!=0) {
+		if(AES_set_decrypt_key(keyArray+1, 128, &AES_KEY)!=0) {
 			fprintf(stderr, "Could not succesfully set the decryption key.\n");
 			exit(-1);
 		}
+		fprintf(stderr, "Set the key for decryption\n");
 		return 0;
 	}
 }
