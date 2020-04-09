@@ -4,15 +4,6 @@
 #include "AES.h"
 #include <iostream>
 #include <fstream>
-#include <sys/stat.h>
-
-size_t getFilesize(const char* filename) {
-    struct stat st;
-    if(stat(filename, &st) != 0) {
-        return 0;
-    }
-    return st.st_size;
-}
 
 using namespace std;
 
@@ -73,11 +64,9 @@ int main(int argc, char** argv)
     long end;
     size_t result;
     unsigned char * buffer;
-    //int bytesRead = 0;
     if(inputFile!=NULL) {
         //while(!inputFile.eof()){
         while(!feof(inputFile)) {
-
             //getting the 8 or 16 character string
             if(cipherName == "DES"){
                 end = 8;
@@ -87,7 +76,6 @@ int main(int argc, char** argv)
             buffer = new unsigned char[end];
 
             result = fread(buffer, 1, end, inputFile);
-            cout << result << endl;
             if(result != end && result != 0 && encOrDec != "DEC"){
                 for(long int i = result; i < end; i++){
                     buffer[i] = '0';
@@ -120,6 +108,7 @@ int main(int argc, char** argv)
 
     /* Perform decryption */
     //cipher->decrypt(cipherText);
+    cout << "Done.\n";
 
 	return 0;
 }
