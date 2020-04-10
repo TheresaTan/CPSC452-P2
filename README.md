@@ -16,6 +16,4 @@ Christopher Phongsa - cphongsa@csu.fullerton.edu
         ./cipher AES "00112233445566778899aabbccddeeff" ENC in.txt enc.txt
     - AES decryption
         ./cipher AES "00112233445566778899aabbccddeeff" DEC enc.txt dec.txt
-OR
-    ./cipher AES "0123456789abcdef" ENC in.txt enc.txt
-    ./cipher AES "0123456789abcdef" DEC enc.txt dec.txt
+

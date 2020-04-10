@@ -4,8 +4,21 @@
 #include "AES.h"
 #include <iostream>
 #include <fstream>
+#include <cstring>
+#include <sys/stat.h>
+#include <string>
 
 using namespace std;
+
+size_t getFilesize(FILE* filename) {
+    struct stat st;
+    int fp = fileno(filename);
+    if(fstat(fp, &st) != 0) {
+        return 0;
+    }
+    fprintf(stderr, "the size of the file is %ld\n", st.st_size);
+    return st.st_size;   
+}
 
 int main(int argc, char** argv)
 {
@@ -20,8 +33,7 @@ int main(int argc, char** argv)
     /* Create an instance of the DES cipher */
     CipherInterface* cipher = NULL;
     const unsigned char *key = NULL;
-    unsigned char key2[18];
-
+    unsigned char key2[33];
     const unsigned char *cipherText = NULL;
     const unsigned char *plainText = NULL;
 
@@ -49,7 +61,14 @@ int main(int argc, char** argv)
     }else if(cipherName == "AES"){
         cipher = new AES();
         cout << "AES IS PICKED, SETTING KEY NOW" << endl;
-        strncpy((char*)key2+1, (const char*)key, 17);
+        // if (strlen((const char*)key) == 32){
+            //key2 = new unsigned char[strlen((const char*)key)];
+        //     strncpy((char*)key2+1, (const char*)key, strlen((const char*)key));
+        // } else {
+        //     key2 = new unsigned char[18];
+            strncpy((char*)key2+1, (const char*)key, 33);
+
+        //}
         // cipher->setKey(key);
     }else cipher = NULL;
 
@@ -64,6 +83,13 @@ int main(int argc, char** argv)
     inputFile = fopen(input, "rb");
     outputFile = fopen(output, "wb");
 
+
+    size_t fsize = getFilesize(inputFile);
+   
+
+    //numWrite=end-padding
+    //fwrite(block, 1, numWrite, fp);
+
     // Check to see if files opened correctly AKA sanity checks
     if(!inputFile) {
         perror("fopen");
@@ -73,7 +99,7 @@ int main(int argc, char** argv)
         perror("fopen");
         exit(-1);
     }
-
+    size_t counter = 1;
     long end;
     size_t result;
     if(inputFile!=NULL) {
@@ -89,6 +115,18 @@ int main(int argc, char** argv)
             }
             cipher->setKey(key2);
         }
+
+    size_t numBlocks = fsize/end;
+
+    // Count the partial block if necessary
+    if(fsize % end > 0)
+	    ++numBlocks;
+
+    size_t padding = end - (fsize%end);
+    //numWrite = 
+
+    const unsigned char *tempPlainText;
+    tempPlainText = new unsigned char[fsize];
         unsigned char buffer[end+1];
         while(!feof(inputFile)) {
             memset(buffer, 0, end+1);
@@ -106,14 +144,43 @@ int main(int argc, char** argv)
                     //encrypts up to 8 character string
                     //cipherText = cipher->encrypt((const unsigned char*)"helloworld");
                     fwrite(cipherText, sizeof(char), end, outputFile);
+                    if (counter == numBlocks+1){
+                        memset(buffer,0,end+1);
+                        for(long int i = 0; i < end; i++){
+                            if(i==end-1){
+                                buffer[i] = (unsigned char)padding;
+                            } else {
+                                buffer[i] = '0';
+                            }
+                        }
+                        cipherText = cipher->encrypt((const unsigned char*)buffer);
+                        fwrite(cipherText, sizeof(char), end, outputFile);
+                
+                    }
                     delete[] cipherText;
                 }else if(encOrDec == "DEC"){
                     plainText = cipher->decrypt((const unsigned char*)buffer);
                     cout << "STARTING DECRYPTION \n";
                     //plainText = (const unsigned char*)"dodecryptlater";
-                    fwrite(plainText, sizeof(char), end, outputFile);
+
+                    if (counter == numBlocks-1){
+                        strcat((char*)tempPlainText, (char*)plainText);
+                    }else if(counter==numBlocks){
+                        int a = plainText[end-1] - '0';
+                        cout <<a<<endl;
+                        cout << tempPlainText << endl;
+                        cout << plainText << endl;
+                        strcat((char*)tempPlainText, (char*)plainText);
+                        // memset((char*)plainText,' ', end);
+                        // strncpy((char*)plainText, (const char*)tempPlainText, (16-a));
+                        fwrite(tempPlainText, sizeof(char), end-a, outputFile);
+                        delete[] tempPlainText;
+                    }else if(counter!=numBlocks){
+                        fwrite(plainText, sizeof(char), end, outputFile);
+                    } 
                     delete[] plainText;
                 }
+                counter++;
             }
         }
         
