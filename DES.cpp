@@ -240,5 +240,3 @@ unsigned char DES::twoCharToHexByte(const unsigned char* twoChars)
 
 	return singleByte;
 }
-
-
