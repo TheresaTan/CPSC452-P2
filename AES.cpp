@@ -99,7 +99,6 @@ unsigned char* AES::encrypt(const unsigned char* plainText)
 
 	AES_ecb_encrypt(plainText, tempCipher, &AES_KEY, AES_ENCRYPT);
 	
-	//printf("%c\n", tempCipher[0]);
 	return tempCipher;
 	
 }

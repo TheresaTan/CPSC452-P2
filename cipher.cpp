@@ -10,13 +10,13 @@
 
 using namespace std;
 
+// function to get the size of the file
 size_t getFilesize(FILE* filename) {
     struct stat st;
     int fp = fileno(filename);
     if(fstat(fp, &st) != 0) {
         return 0;
     }
-    fprintf(stderr, "the size of the file is %ld\n", st.st_size);
     return st.st_size;   
 }
 
@@ -61,15 +61,7 @@ int main(int argc, char** argv)
     }else if(cipherName == "AES"){
         cipher = new AES();
         cout << "AES IS PICKED, SETTING KEY NOW" << endl;
-        // if (strlen((const char*)key) == 32){
-            //key2 = new unsigned char[strlen((const char*)key)];
-        //     strncpy((char*)key2+1, (const char*)key, strlen((const char*)key));
-        // } else {
-        //     key2 = new unsigned char[18];
             strncpy((char*)key2+1, (const char*)key, 33);
-
-        //}
-        // cipher->setKey(key);
     }else cipher = NULL;
 
     /* Error checks */
@@ -83,13 +75,6 @@ int main(int argc, char** argv)
     inputFile = fopen(input, "rb");
     outputFile = fopen(output, "wb");
 
-
-    size_t fsize = getFilesize(inputFile);
-   
-
-    //numWrite=end-padding
-    //fwrite(block, 1, numWrite, fp);
-
     // Check to see if files opened correctly AKA sanity checks
     if(!inputFile) {
         perror("fopen");
@@ -99,9 +84,15 @@ int main(int argc, char** argv)
         perror("fopen");
         exit(-1);
     }
+    size_t fsize = getFilesize(inputFile);
+
+    // number of blocks counter
     size_t counter = 1;
+
+    // size of each block
     long end;
     size_t result;
+
     if(inputFile!=NULL) {
         //getting the 8 or 16 character string
         if(cipherName == "DES"){
@@ -115,24 +106,31 @@ int main(int argc, char** argv)
             }
             cipher->setKey(key2);
         }
-
+    // get the number of blocks to use
     size_t numBlocks = fsize/end;
 
     // Count the partial block if necessary
     if(fsize % end > 0)
 	    ++numBlocks;
 
+    // get the number of padding to use
     size_t padding = end - (fsize%end);
-    //numWrite = 
 
+    // temporary char array to store the second to last block of the plaintext
     const unsigned char *tempPlainText;
     tempPlainText = new unsigned char[fsize];
-        unsigned char buffer[end+1];
+
+    // buffer to store input from inputFile
+    unsigned char buffer[end+1];
+
         while(!feof(inputFile)) {
             memset(buffer, 0, end+1);
             result = fread(buffer, 1, end, inputFile);
+
+            // if 0, then we have reached the end of the file
             if(result != 0) {
                 if(result != end && encOrDec != "DEC"){
+                    // add padding if necessary to complete the length of the block size
                     for(long int i = result; i < end; i++){
                         buffer[i] = '0';
                     }
@@ -142,38 +140,37 @@ int main(int argc, char** argv)
                     cipherText = cipher->encrypt((const unsigned char*)buffer);
                     cout << "STARTING ENCRYPTION \n";
                     //encrypts up to 8 character string
-                    //cipherText = cipher->encrypt((const unsigned char*)"helloworld");
                     fwrite(cipherText, sizeof(char), end, outputFile);
-                    if (counter == numBlocks+1){
+                    if (counter == numBlocks){
+
+                        // clear buffer so that we can concatenate a block that includes the number of padding
                         memset(buffer,0,end+1);
                         for(long int i = 0; i < end; i++){
                             if(i==end-1){
-                                buffer[i] = (unsigned char)padding;
+                                // store the padding in the last index.
+                                buffer[i] = padding;
                             } else {
                                 buffer[i] = '0';
                             }
                         }
                         cipherText = cipher->encrypt((const unsigned char*)buffer);
                         fwrite(cipherText, sizeof(char), end, outputFile);
-                
                     }
                     delete[] cipherText;
                 }else if(encOrDec == "DEC"){
                     plainText = cipher->decrypt((const unsigned char*)buffer);
                     cout << "STARTING DECRYPTION \n";
-                    //plainText = (const unsigned char*)"dodecryptlater";
-
                     if (counter == numBlocks-1){
+                        // store the second to last block into the temporary char array
                         strcat((char*)tempPlainText, (char*)plainText);
                     }else if(counter==numBlocks){
-                        int a = plainText[end-1] - '0';
-                        cout <<a<<endl;
-                        cout << tempPlainText << endl;
-                        cout << plainText << endl;
+                        // grab the number of padding to remove
+                        int rmPadding = plainText[end-1];
+                        // concatenate the last block to the temporary char array
                         strcat((char*)tempPlainText, (char*)plainText);
-                        // memset((char*)plainText,' ', end);
-                        // strncpy((char*)plainText, (const char*)tempPlainText, (16-a));
-                        fwrite(tempPlainText, sizeof(char), end-a, outputFile);
+
+                        // write to the file, while removing padding
+                        fwrite(tempPlainText, sizeof(char), end-rmPadding, outputFile);
                         delete[] tempPlainText;
                     }else if(counter!=numBlocks){
                         fwrite(plainText, sizeof(char), end, outputFile);
@@ -184,17 +181,12 @@ int main(int argc, char** argv)
             }
         }
         
+        // close the files
         fclose(inputFile);
         fclose(outputFile);
 
     }else cout << "Unable to open file";
 
-
-    /* Perform encryption */
-    //string cipherText = cipher->encrypt("hello world");
-
-    /* Perform decryption */
-    //cipher->decrypt(cipherText);
     cout << "Done.\n";
 
 	return 0;
