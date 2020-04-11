@@ -30,7 +30,7 @@ C++
     ./cipher AES <KEY> <ENC/DEC> <INPUT FILE> <OUTPUT FILE>
 
 ------------------------PLEASE NOTE------------------------
-- <KEY> must be 16 bytes (32-bits) long
+- <KEY> input must be 32 bytes long
 -----------------------------------------------------------
 - For example (these commands can be run sequentially):
     - AES encryption
